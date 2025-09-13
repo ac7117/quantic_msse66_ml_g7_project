@@ -10,18 +10,19 @@ This is the machine learning project for MSSE 66 Group 7, focusing on malware de
 ```
 msse_ml_g7_project/
 ├── README.md                           # This file
+├── DATA_README.md                      # Dataset information and setup
 ├── requirements.txt                    # Python dependencies
 ├── setup_environment.ps1              # PowerShell setup script
 ├── setup_environment.bat              # Batch setup script
 ├── msse66_ml_group7_project.py        # Main project implementation
 ├── test.read.goodware.csv.py          # Data exploration script
 ├── project_notes.ipynb                # Project notes and analysis
-├── goodware.csv                        # Goodware dataset
-├── brazilian-malware.csv              # Malware dataset
+├── goodware.csv                        # Goodware dataset (NOT in Git - see DATA_README.md)
+├── brazilian-malware.csv              # Malware dataset (NOT in Git - see DATA_README.md)
 ├── Introduction to ML Project Rubric.pdf  # Project requirements
 ├── venv/                              # Virtual environment (created after setup)
 └── _backup/                           # Backup files
-    └── goodware.csv
+    └── goodware.csv                   # (NOT in Git - see DATA_README.md)
 ```
 
 ## Prerequisites
@@ -29,6 +30,7 @@ msse_ml_g7_project/
 - Windows 10/11 (scripts are Windows-optimized)
 - At least 2GB free disk space
 - Internet connection for package installation
+- **Data files**: `goodware.csv` and `brazilian-malware.csv` (see DATA_README.md for details)
 
 ## Quick Start
 

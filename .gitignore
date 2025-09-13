@@ -49,11 +49,13 @@ Pipfile.lock
 poetry.lock
 
 # Data Files (large datasets)
-# Uncomment if datasets are too large for GitHub
-# *.csv
-# *.xlsx
-# *.json
-# data/
+# GitHub has a 100MB file size limit, so excluding large CSV files
+*.csv
+# Keep small CSV files if needed (uncomment specific ones below)
+# !small_sample.csv
+*.xlsx
+*.json
+data/
 
 # Model Files (if they become large)
 models/
