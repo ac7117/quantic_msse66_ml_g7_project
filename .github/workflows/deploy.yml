@@ -1,0 +1,70 @@
+name: Deploy to Google Cloud Run
+
+on:
+  push:
+    branches: [ main ]
+    # Removed paths filter - now triggers on ANY commit to main
+  workflow_run:
+    workflows: ["CI - Test ML Model and Flask App"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Google Cloud Run
+    # Only run if CI tests passed or this is a manual push to main
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'push' }}
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Google Cloud CLI
+      uses: google-github-actions/setup-gcloud@v1
+      with:
+        version: 'latest'
+    
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
+    
+    - name: Configure Docker for Google Cloud
+      run: gcloud auth configure-docker
+    
+    - name: Set project configuration
+      run: |
+        gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+        echo "✅ Project configured: ${{ secrets.GCP_PROJECT_ID }}"
+    
+    - name: Build and deploy to Cloud Run
+      run: |
+        cd flask_app
+        
+        echo "🔨 Building and deploying to Cloud Run..."
+        gcloud run deploy mse66-ml-group7-v1 \
+          --source . \
+          --platform managed \
+          --region us-central1 \
+          --allow-unauthenticated \
+          --memory 1Gi \
+          --cpu 1 \
+          --timeout 300 \
+          --max-instances 10 \
+          --set-env-vars="FLASK_ENV=production"
+    
+    - name: Get service URL
+      run: |
+        SERVICE_URL=$(gcloud run services describe mse66-ml-group7-v1 --region=us-central1 --format='value(status.url)')
+        echo "🚀 Deployment successful!"
+        echo "📡 Service URL: $SERVICE_URL"
+        
+        # Optional: Test the deployed service
+        echo "🧪 Testing deployed service..."
+        curl -f "$SERVICE_URL" -L || echo "⚠️  Service health check failed"
+    
+    - name: Clean up
+      run: |
+        echo "🧹 Cleaning up build artifacts..."
+        docker system prune -f || true

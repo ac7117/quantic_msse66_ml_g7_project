@@ -1,0 +1,185 @@
+name: Manual Deploy Check
+
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      deploy_target:
+        description: 'Deployment target'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+
+jobs:
+  pre-deploy-check:
+    runs-on: ubuntu-latest
+    name: Pre-deployment Validation
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Set up Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install -r flask_app/requirements.txt
+    
+    - name: Validate Flask app structure
+      run: |
+        echo "🔍 Validating Flask app structure..."
+        
+        # Check required files exist
+        files=(
+          "flask_app/app.py"
+          "flask_app/Dockerfile"
+          "flask_app/requirements.txt"
+          "flask_app/templates/index.html"
+          "flask_app/templates/results.html"
+          "flask_app/templates/about.html"
+        )
+        
+        for file in "${files[@]}"; do
+          if [[ -f "$file" ]]; then
+            echo "✅ $file exists"
+          else
+            echo "❌ $file missing"
+            exit 1
+          fi
+        done
+    
+    - name: Test Flask app imports
+      run: |
+        echo "📦 Testing Flask app imports..."
+        cd flask_app
+        python -c "
+        import sys
+        sys.path.append('.')
+        
+        try:
+            from app import app
+            print('✅ Flask app imports successfully')
+        except Exception as e:
+            print(f'❌ Flask import error: {e}')
+            sys.exit(1)
+        "
+    
+    - name: Validate Dockerfile
+      run: |
+        echo "🐳 Validating Dockerfile..."
+        cd flask_app
+        
+        if [[ -f "Dockerfile" ]]; then
+          echo "✅ Dockerfile exists"
+          
+          # Check for required Dockerfile components
+          if grep -q "FROM python" Dockerfile; then
+            echo "✅ Python base image found"
+          else
+            echo "❌ No Python base image"
+            exit 1
+          fi
+          
+          if grep -q "COPY requirements.txt" Dockerfile; then
+            echo "✅ Requirements copy found"
+          else
+            echo "⚠️  No requirements.txt copy found"
+          fi
+          
+          if grep -q "CMD\|ENTRYPOINT" Dockerfile; then
+            echo "✅ Run command found"
+          else
+            echo "❌ No run command found"
+            exit 1
+          fi
+        else
+          echo "❌ Dockerfile missing"
+          exit 1
+        fi
+    
+    - name: Check model files (optional)
+      run: |
+        echo "🤖 Checking for model files..."
+        
+        model_dirs=("models" "flask_app/models")
+        model_found=false
+        
+        for dir in "${model_dirs[@]}"; do
+          if [[ -d "$dir" ]]; then
+            echo "📁 Found model directory: $dir"
+            if ls "$dir"/*.pkl 1> /dev/null 2>&1; then
+              echo "✅ Model files found in $dir"
+              model_found=true
+              break
+            fi
+          fi
+        done
+        
+        if [[ "$model_found" == "false" ]]; then
+          echo "⚠️  No model files found (may be generated during build)"
+        fi
+    
+    - name: Deployment readiness summary
+      run: |
+        echo "📋 DEPLOYMENT READINESS SUMMARY"
+        echo "================================"
+        echo "✅ Flask app structure validated"
+        echo "✅ Python imports working"
+        echo "✅ Dockerfile validated"
+        echo "✅ All checks passed"
+        echo ""
+        echo "🚀 Ready for deployment to: ${{ github.event.inputs.deploy_target }}"
+        echo ""
+        echo "Next steps:"
+        echo "1. Set up GitHub secrets for GCP deployment:"
+        echo "   - GCP_SA_KEY (Service Account JSON)"
+        echo "   - GCP_PROJECT_ID (Google Cloud Project ID)"
+        echo "2. Run the deploy workflow manually or push to main"
+        echo "3. Monitor deployment in Google Cloud Console"
+
+  simulate-deploy:
+    runs-on: ubuntu-latest
+    name: Simulate Deployment Process
+    needs: pre-deploy-check
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Simulate Docker build
+      run: |
+        echo "🐳 Simulating Docker build process..."
+        cd flask_app
+        
+        echo "Step 1: Building Docker image..."
+        echo "FROM python:3.11-slim" > Dockerfile.test
+        echo "WORKDIR /app" >> Dockerfile.test
+        echo "COPY requirements.txt ." >> Dockerfile.test
+        echo "RUN pip install -r requirements.txt" >> Dockerfile.test
+        echo "COPY . ." >> Dockerfile.test
+        echo "CMD python app.py" >> Dockerfile.test
+        
+        echo "✅ Docker build simulation complete"
+        
+        # Clean up
+        rm Dockerfile.test
+    
+    - name: Simulate deployment steps
+      run: |
+        echo "☁️ Simulating Cloud Run deployment..."
+        echo "Step 1: Authenticating to Google Cloud... ✅"
+        echo "Step 2: Building container image... ✅"
+        echo "Step 3: Pushing to Container Registry... ✅"
+        echo "Step 4: Deploying to Cloud Run... ✅"
+        echo "Step 5: Configuring traffic routing... ✅"
+        echo ""
+        echo "🎉 Deployment simulation successful!"
+        echo ""
+        echo "Simulated service URL: https://mse66-ml-group7-v1-example.run.app"
