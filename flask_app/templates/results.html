@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔰 Malware Self-Assessed Detector - MSE66 Intro to ML - Group 7</title>
+    
+    <!-- Material Design CSS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/results.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-wrapper">
+            <div class="container">
+                <a href="/" class="brand-logo">
+                    <i class="material-icons left">security</i>
+                    Malware Self-Assessed Detector - MSE66 - Intro to ML - Group 7
+                </a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About the Model</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container container_for_card">
+        <!-- Results Card -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card z-depth-3 {{ 'benign-result' if result.prediction == 0 else 'malware-result' }}">
+                    <div class="card-content" style="padding: 20px; text-align: center;">
+                        <div class="row" style="margin-bottom: 10px;">
+                            <div class="col s12 m4">
+                                {% if result.prediction == 0 %}
+                                    <i class="material-icons" style="font-size: 2.5rem; margin-bottom: 10px;">check_circle</i>
+                                    <h5 style="margin: 5px 0;">BENIGN</h5>
+                                {% else %}
+                                    <i class="material-icons" style="font-size: 2.5rem; margin-bottom: 10px;">warning</i>
+                                    <h5 style="margin: 5px 0;">MALWARE</h5>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col s12 m4">
+                                <h6 style="margin: 5px 0;">Confidence</h6>
+                                <h4 style="margin: 5px 0;">{{ "%.1f"|format(result.confidence * 100) }}%</h4>
+                                <div class="confidence-bar" style="height: 15px; margin: 10px 0;">
+                                    <div class="confidence-fill {{ 'benign-fill' if result.prediction == 0 else 'malware-fill' }}" 
+                                         style="width: {{ result.confidence * 100 }}%;"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="col s12 m4">
+                                <h6 style="margin: 5px 0;">Risk Level</h6>
+                                <span class="risk-badge 
+                                    {% if result.risk_level == 'SAFE' %}risk-safe
+                                    {% elif result.risk_level in ['LOW RISK - Review Required', 'LIKELY SAFE'] %}risk-low
+                                    {% elif result.risk_level == 'HIGH RISK' %}risk-high
+                                    {% else %}risk-uncertain
+                                    {% endif %}" style="margin: 10px 0; display: inline-block;">
+                                    {{ result.risk_level }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Compact Results Summary -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content" style="padding: 15px;">
+                        <div class="row" style="margin-bottom: 0;">
+                            <!-- Probability Breakdown -->
+                            <div class="col s12 m6">
+                                <h6 style="margin-bottom: 15px;">
+                                    <i class="material-icons tiny left">assessment</i>
+                                    Probability Breakdown
+                                </h6>
+                                
+                                <div class="row" style="margin-bottom: 10px;">
+                                    <div class="col s4"><strong>Benign:</strong></div>
+                                    <div class="col s3">{{ "%.1f"|format(result.probabilities.benign * 100) }}%</div>
+                                    <div class="col s5">
+                                        <div class="progress" style="height: 8px; margin: 5px 0;">
+                                            <div class="determinate green" style="width: {{ result.probabilities.benign * 100 }}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row" style="margin-bottom: 10px;">
+                                    <div class="col s4"><strong>Malware:</strong></div>
+                                    <div class="col s3">{{ "%.1f"|format(result.probabilities.malware * 100) }}%</div>
+                                    <div class="col s5">
+                                        <div class="progress" style="height: 8px; margin: 5px 0;">
+                                            <div class="determinate red" style="width: {{ result.probabilities.malware * 100 }}%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Quick Summary -->
+                            <div class="col s12 m6">
+                                <h6 style="margin-bottom: 15px;">
+                                    <i class="material-icons tiny left">info</i>
+                                    Quick Summary
+                                </h6>
+                                
+                                <div style="font-size: 0.9em; line-height: 1.4;">
+                                    <div style="margin-bottom: 8px;">
+                                        <strong>Result:</strong> 
+                                        <span class="{{ 'green-text' if result.prediction == 0 else 'red-text' }}">
+                                            {{ result.prediction_label }}
+                                        </span>
+                                    </div>
+                                    <div style="margin-bottom: 8px;">
+                                        <strong>Confidence:</strong> {{ "%.1f"|format(result.confidence * 100) }}%
+                                    </div>
+                                    <div style="margin-bottom: 8px;">
+                                        <strong>Risk:</strong> {{ result.risk_level }}
+                                    </div>
+                                    <div>
+                                        <strong>Model:</strong> Random Forest (5 features)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Features Used -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">
+                            <i class="material-icons left">input</i>
+                            Input Features Used
+                        </span>
+                        
+                        <div class="feature-table">
+                            <table class="striped responsive-table">
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Description</th>
+                                        <th>Value Used</th>
+                                        <th>Impact</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><strong>PE Characteristics</strong></td>
+                                        <td>PE file characteristics flags</td>
+                                        <td>{{ "{:,}".format(features['2']|int) }}</td>
+                                        <td>
+                                            {% if features['2']|int < 1000 %}
+                                                <span class="red-text">↑ Malware indicator</span>
+                                            {% else %}
+                                                <span class="green-text">↓ Benign indicator</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>DLL Characteristics</strong></td>
+                                        <td>DLL characteristics flags</td>
+                                        <td>{{ "{:,}".format(features['3']|int) }}</td>
+                                        <td>
+                                            {% if features['3']|int > 10000 %}
+                                                <span class="red-text">↑ Malware indicator</span>
+                                            {% else %}
+                                                <span class="green-text">↓ Benign indicator</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>First Seen Date</strong></td>
+                                        <td>Detection timestamp (numeric)</td>
+                                        <td>{{ "{:,}".format(features['6']|int) }}</td>
+                                        <td>
+                                            {% if features['6']|int < 100 %}
+                                                <span class="red-text">↑ Malware indicator</span>
+                                            {% else %}
+                                                <span class="green-text">↓ Benign indicator</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Image Base Address</strong></td>
+                                        <td>Memory base address for PE</td>
+                                        <td>{{ "{:,}".format(features['8']|int) }}</td>
+                                        <td>
+                                            {% if features['8']|int > 100000000 %}
+                                                <span class="red-text">↑ Malware indicator</span>
+                                            {% else %}
+                                                <span class="green-text">↓ Benign indicator</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Code Section Size</strong></td>
+                                        <td>Size of executable code section</td>
+                                        <td>{{ "{:,}".format(features['19']|int) }} bytes</td>
+                                        <td>
+                                            {% if features['19']|int > 500000 %}
+                                                <span class="red-text">↑ Malware indicator</span>
+                                            {% else %}
+                                                <span class="green-text">↓ Benign indicator</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="row">
+            <div class="col s12 center-align">
+                <a href="/" class="btn-large waves-effect waves-light blue">
+                    <i class="material-icons left">refresh</i>
+                    Analyze Another File
+                </a>
+                <a href="/about" class="btn-large waves-effect waves-light grey darken-1" style="margin-left: 20px;">
+                    <i class="material-icons left">info</i>
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Design JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        // Initialize Material Design components
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate confidence bar on load
+            setTimeout(function() {
+                const confidenceBars = document.querySelectorAll('.confidence-fill');
+                confidenceBars.forEach(bar => {
+                    bar.style.transition = 'width 1s ease-in-out';
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>

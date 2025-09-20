@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔰 Malware Self-Assessed Detector - MSE66 Intro to ML - Group 7</title>
+    
+    <!-- Material Design CSS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/about.css') }}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-wrapper">
+            <div class="container">
+                <a href="/" class="brand-logo">
+                    <i class="material-icons left">security</i>
+                    Malware Self-Assessed Detector - MSE66 - Intro to ML - Group 7
+                </a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About the Model</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container container_for_card">
+        <!-- Main Info Card -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card z-depth-3">
+                    <div class="card-content">
+                        <p class="flow-text center-align grey-text">
+                            Machine Learning driven self-evaluated malware detection
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Statistics -->
+        <div class="row">
+            <div class="col s12 m3">
+                <div class="card center-align">
+                    <div class="card-content">
+                        <i class="material-icons large blue-text">trending_up</i>
+                        <h4 class="stat-number">{{ model_info.model_accuracy }}</h4>
+                        <p>Model Accuracy</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m6">
+                <div class="card center-align">
+                    <div class="card-content">
+                        <i class="material-icons large green-text">compress</i>
+                        <h4 class="stat-number">{{ model_info.feature_reduction }}</h4>
+                        <p>Feature Reduction</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col s12 m3">
+                <div class="card center-align">
+                    <div class="card-content">
+                        <i class="material-icons large orange-text">speed</i>
+                        <h4 class="stat-number">5</h4>
+                        <p>Key Features</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Details -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content center-align middle-align">
+                        <span class="card-title">
+                            <i class="material-icons center">featured_play_list</i>
+                            5 Most Impactful Input Features (selected from the original 35)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Cards -->
+        <div class="row">
+            {% for feature in model_info.features %}
+            <div class="col s12 m6 l4">
+                <div class="card feature-card">
+                    <div class="card-content">
+                        <span class="card-title">
+                            {% if loop.index == 1 %}
+                                <i class="material-icons feature-icon">flag</i>
+                            {% elif loop.index == 2 %}
+                                <i class="material-icons feature-icon">library_books</i>
+                            {% elif loop.index == 3 %}
+                                <i class="material-icons feature-icon">schedule</i>
+                            {% elif loop.index == 4 %}
+                                <i class="material-icons feature-icon">memory</i>
+                            {% else %}
+                                <i class="material-icons feature-icon">code</i>
+                            {% endif %}
+                            <br>{{ feature.name }}
+                        </span>
+                        <p><strong>Description:</strong> {{ feature.description }}</p>
+                        <p><strong>Type:</strong> {{ feature.type }}</p>
+                        <p><strong>Range:</strong> {{ feature.range }}</p>
+                        <div class="chip blue white-text">
+                            {{ feature.pattern }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- How It Works -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">
+                            <i class="material-icons left">settings</i>
+                            How It Works
+                        </span>
+                        
+                        <div class="row">
+                            <div class="col s12 m6">
+                                <h6><i class="material-icons tiny">input</i> Input Processing</h6>
+                                <p>The system takes PE (Portable Executable) file characteristics as input. These are numerical features extracted from Windows executable files that represent structural and behavioral properties.</p>
+                                
+                                <h6><i class="material-icons tiny">psychology</i> Machine Learning</h6>
+                                <p>A Random Forest classifier trained on the Brazilian Malware Dataset analyzes patterns in these features to distinguish between benign software and malware.</p>
+                            </div>
+                            <div class="col s12 m6">
+                                <h6><i class="material-icons tiny">analytics</i> Prediction</h6>
+                                <p>The model outputs a binary classification (Benign or Malware) along with confidence scores and probability estimates for both classes.</p>
+                                
+                                <h6><i class="material-icons tiny">verified</i> Validation</h6>
+                                <p>The simplified 5-feature model maintains 98.39% accuracy compared to the full 35-feature model's 99.24%, making it ideal for production use.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Details -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">
+                            <i class="material-icons left">build</i>
+                            Technical Details
+                        </span>
+                        
+                        <ul class="collection">
+                            <li class="collection-item">
+                                <i class="material-icons left">memory</i>
+                                <strong>Model Type:</strong> Random Forest Classifier
+                            </li>
+                            <li class="collection-item">
+                                <i class="material-icons left">storage</i>
+                                <strong>Training Data:</strong> Brazilian Malware Dataset (50,000+ samples)
+                            </li>
+                            <li class="collection-item">
+                                <i class="material-icons left">tune</i>
+                                <strong>Feature Engineering:</strong> Categorical encoding, standardization
+                            </li>
+                            <li class="collection-item">
+                                <i class="material-icons left">assessment</i>
+                                <strong>Validation:</strong> 5-fold cross-validation, stratified sampling
+                            </li>
+                            <li class="collection-item">
+                                <i class="material-icons left">code</i>
+                                <strong>Framework:</strong> scikit-learn, pandas, Flask
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Usage Guidelines -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">
+                            <i class="material-icons left">help</i>
+                            Usage Guidelines
+                        </span>
+                        
+                        <div class="row">
+                            <div class="col s12 m6">
+                                <h6 class="green-text">✅ Best Practices</h6>
+                                <ul>
+                                    <li>Use realistic feature values from actual PE files</li>
+                                    <li>Consider the confidence score along with the prediction</li>
+                                    <li>Review uncertain results manually</li>
+                                    <li>Use the API endpoint for batch processing</li>
+                                </ul>
+                            </div>
+                            <div class="col s12 m6">
+                                <h6 class="orange-text">⚠️ Limitations</h6>
+                                <ul>
+                                    <li>Only works with PE file features</li>
+                                    <li>Requires specific feature format</li>
+                                    <li>Based on 2025 training data</li>
+                                    <li>May not detect newest malware variants</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Design JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔰 Malware Self-Assessed Detector - MSE66 Intro to ML - Group 7</title>
+    
+    <!-- Material Design CSS -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="{{ url_for('static', filename='css/index.css') }}" rel="stylesheet">
+</head>
+<body style="vertical-align: top;">
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-wrapper">
+            <div class="container">
+                <a href="/" class="brand-logo">
+                    <i class="material-icons left">security</i>
+                    Malware Self-Assessed Detector - MSE66 - Intro to ML - Group 7
+                </a>
+                <ul class="right hide-on-med-and-down">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/about">About the Model</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container container_for_card">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="card-panel {{ 'red' if category == 'error' else 'green' }} lighten-2">
+                        <span class="white-text">{{ message }}</span>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Main Form Card -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card z-depth-3">
+                    <div class="card-content">
+                        <span class="card-title center-align">
+                            <i class="material-icons small">bug_report</i> Enter the PE file characteristics to analyze for malware detection
+                        </span>                        
+                        <form action="/predict" method="POST" class="row">
+                            <!-- Input Feature 2: Characteristics -->
+                            <div class="col s12 m6">
+                                <div class="feature-info">
+                                    <div class="feature-title">
+                                        <i class="material-icons tiny">flag</i>
+                                        PE Characteristics (Feature 2)
+                                    </div>
+                                    <div class="feature-desc">
+                                        PE file characteristics flags combined into integers
+                                    </div>
+                                </div>
+                                <div class="input-field">
+                                    <select name="characteristics" id="characteristics" required>
+                                        <option value="" disabled selected>Choose common value</option>
+                                        <option value="33167">33167 (Most common - Benign)</option>
+                                        <option value="271">271 (Common - Benign)</option>
+                                        <option value="33166">33166 (Common - Benign)</option>
+                                        <option value="783">783 (Mid-range)</option>
+                                        <option value="287">287 (Suspicious - Malware)</option>
+                                        <option value="270">270 (Suspicious - Malware)</option>
+                                        <option value="259">259 (High risk - Malware)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Input Feature 3: DLL Characteristics -->
+                            <div class="col s12 m6">
+                                <div class="feature-info">
+                                    <div class="feature-title">
+                                        <i class="material-icons tiny">library_books</i>
+                                        DLL Characteristics (Feature 3)
+                                    </div>
+                                    <div class="feature-desc">
+                                        DLL characteristics flags (DYNAMIC_BASE, NX_COMPAT, etc.)
+                                    </div>
+                                </div>
+                                <div class="input-field">
+                                    <select name="dll_characteristics" id="dll_characteristics" required>
+                                        <option value="" disabled selected>Choose common value</option>
+                                        <option value="0">0 (Most common - Benign)</option>
+                                        <option value="256">256 (Common - Benign)</option>
+                                        <option value="320">320 (Common - Benign)</option>
+                                        <option value="1024">1024 (Mid-range)</option>
+                                        <option value="1344">1344 (Mid-range)</option>
+                                        <option value="2048">2048 (Mid-range)</option>
+                                        <option value="32768">32768 (Suspicious - Malware)</option>
+                                        <option value="33088">33088 (High risk - Malware)</option>
+                                        <option value="33792">33792 (Highest risk - Malware)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Input Feature 6: First Seen Date -->
+                            <div class="col s12 m6">
+                                <div class="feature-info">
+                                    <div class="feature-title">
+                                        <i class="material-icons tiny">schedule</i>
+                                        First Seen Date (Feature 6)
+                                    </div>
+                                    <div class="feature-desc">
+                                        Timestamp when file was first detected (numeric value)
+                                    </div>
+                                </div>
+                                <div class="input-field">
+                                    <input type="number" name="first_seen_date" id="first_seen_date" 
+                                           min="1" max="100000" step="1" required 
+                                           placeholder="e.g., 2000 (recent) or 50 (old)">
+                                    <span class="helper-text">
+                                        Recent files: >1000 (benign) | Old files: <100 (suspicious)
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Input Feature 8: Image Base -->
+                            <div class="col s12 m6">
+                                <div class="feature-info">
+                                    <div class="feature-title">
+                                        <i class="material-icons tiny">memory</i>
+                                        Image Base Address (Feature 8)
+                                    </div>
+                                    <div class="feature-desc">
+                                        Memory address where PE image loads
+                                    </div>
+                                </div>
+                                <div class="input-field">
+                                    <select name="image_base" id="image_base" required>
+                                        <option value="" disabled selected>Choose address</option>
+                                        <option value="4194304">4,194,304 (Most common - Standard)</option>
+                                        <option value="16777216">16,777,216 (Common - Standard)</option>
+                                        <option value="65536">65,536 (Unusual - Low address)</option>
+                                        <option value="268435456">268,435,456 (Suspicious - High)</option>
+                                        <option value="1637482496">1,637,482,496 (Very suspicious)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Input Feature 19: Size of Code -->
+                            <div class="col s12">
+                                <div class="feature-info">
+                                    <div class="feature-title">
+                                        <i class="material-icons tiny">code</i>
+                                        Code Section Size (Feature 19)
+                                    </div>
+                                    <div class="feature-desc">
+                                        Size of the executable code section in bytes
+                                    </div>
+                                </div>
+                                <div class="input-field">
+                                    <input type="number" name="size_of_code" id="size_of_code" 
+                                           min="1" max="35000000" step="1" required 
+                                           placeholder="e.g., 1 (tiny/benign) or 500000 (large/malware)">
+                                    <span class="helper-text">
+                                        Benign: 1-100,000 bytes | Malware: >500,000 bytes
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="col s12 center-align" style="margin-top: 30px;">
+                                <button type="submit" class="btn-large waves-effect waves-light">
+                                    <i class="material-icons left">analytics</i>
+                                    Analyze for Malware
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Examples -->
+        <div class="row">
+            <div class="col s12">
+                <div class="card">
+                    <div class="card-content">
+                        <span class="card-title">
+                            <i class="material-icons left">lightbulb_outline</i>
+                            Quick Test Examples
+                        </span>
+                        <div class="row">
+                            <div class="col s12 m6">
+                                <h6 class="green-text">
+                                    <i class="material-icons tiny">check_circle</i>
+                                    Benign Example
+                                </h6>
+                                <p><strong>Characteristics:</strong> 33167<br>
+                                   <strong>DLL Characteristics:</strong> 0<br>
+                                   <strong>First Seen Date:</strong> 2000<br>
+                                   <strong>Image Base:</strong> 4194304<br>
+                                   <strong>Code Size:</strong> 1</p>
+                            </div>
+                            <div class="col s12 m6">
+                                <h6 class="red-text">
+                                    <i class="material-icons tiny">warning</i>
+                                    Malware Example
+                                </h6>
+                                <p><strong>Characteristics:</strong> 259<br>
+                                   <strong>DLL Characteristics:</strong> 33792<br>
+                                   <strong>First Seen Date:</strong> 25<br>
+                                   <strong>Image Base:</strong> 268435456<br>
+                                   <strong>Code Size:</strong> 500000</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Material Design JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        // Initialize Material Design components
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize select dropdowns
+            var elems = document.querySelectorAll('select');
+            var instances = M.FormSelect.init(elems);
+            
+            // Initialize tooltips if any
+            var tooltips = document.querySelectorAll('.tooltipped');
+            var tooltipInstances = M.Tooltip.init(tooltips);
+        });
+        
+        // Quick fill functions
+        function fillBenignExample() {
+            document.getElementById('characteristics').value = '33167';
+            document.getElementById('dll_characteristics').value = '0';
+            document.getElementById('first_seen_date').value = '2000';
+            document.getElementById('image_base').value = '4194304';
+            document.getElementById('size_of_code').value = '1';
+            M.FormSelect.init(document.querySelectorAll('select'));
+        }
+        
+        function fillMalwareExample() {
+            document.getElementById('characteristics').value = '259';
+            document.getElementById('dll_characteristics').value = '33792';
+            document.getElementById('first_seen_date').value = '25';
+            document.getElementById('image_base').value = '268435456';
+            document.getElementById('size_of_code').value = '500000';  
+            M.FormSelect.init(document.querySelectorAll('select'));
+        }
+    </script>
+</body>
+</html>

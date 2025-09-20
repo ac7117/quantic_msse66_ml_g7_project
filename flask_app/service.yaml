@@ -1,0 +1,39 @@
+# Cloud Run Configuration
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: mse66-ml-group7-v1
+  namespace: 'mse66-ml-group7'
+  labels:
+    cloud.googleapis.com/location: us-central1
+  annotations:
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '10'
+        autoscaling.knative.dev/minScale: '0'
+        run.googleapis.com/cpu-throttling: 'true'
+        run.googleapis.com/execution-environment: gen2
+    spec:
+      containerConcurrency: 80
+      timeoutSeconds: 300
+      containers:
+      - image: gcr.io/mse66-ml-group7/malware-detector:latest
+        ports:
+        - name: http1
+          containerPort: 8080
+        env:
+        - name: GOOGLE_CLOUD_PROJECT
+          value: mse66-ml-group7
+        - name: PORT
+          value: '8080'
+        resources:
+          limits:
+            cpu: '1'
+            memory: 1Gi
+  traffic:
+  - percent: 100
+    latestRevision: true

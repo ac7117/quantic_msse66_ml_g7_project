@@ -1,0 +1,118 @@
+/* Results Page Styles - Malware Detection System */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: 'Roboto', sans-serif;
+    /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+    background: #fefefe;
+    min-height: 100vh;
+}
+
+body {
+    position: relative;
+    top: 0;
+}
+
+.container {
+    margin-top: 0px;
+}
+
+.container_for_card {
+    margin-top: 25px;
+}
+
+.card {
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.result-card {
+    text-align: center;
+    padding: 15px;
+}
+
+.result-icon {
+    font-size: 2.5rem !important;
+    margin-bottom: 10px;
+}
+
+.benign-result {
+    background: linear-gradient(45deg, #4CAF50, #66BB6A);
+    color: white;
+}
+
+.malware-result {
+    background: linear-gradient(45deg, #F44336, #EF5350);
+    color: white;
+}
+
+.confidence-bar {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 8px;
+    height: 15px;
+    overflow: hidden;
+    margin: 5px 0;
+}
+
+.confidence-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.benign-fill {
+    background: linear-gradient(90deg, #81C784, #4CAF50);
+}
+
+.malware-fill {
+    background: linear-gradient(90deg, #E57373, #F44336);
+}
+
+.feature-table {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+nav {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.nav-wrapper {
+    background: linear-gradient(45deg, #1976D2, #1565C0) !important;
+}
+
+.risk-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.9em;
+}
+
+.risk-safe {
+    background-color: #C8E6C9;
+    color: #2E7D32;
+}
+
+.risk-low {
+    background-color: #FFF3E0;
+    color: #E65100;
+}
+
+.risk-high {
+    background-color: #FFCDD2;
+    color: #C62828;
+}
+
+.risk-uncertain {
+    background-color: #E1F5FE;
+    color: #0277BD;
+}

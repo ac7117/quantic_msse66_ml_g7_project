@@ -1,0 +1,100 @@
+/* Index Page Styles - Malware Detection System */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: 'Roboto', sans-serif;
+    /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+    background: #fefefe;
+    min-height: 100vh;
+}
+
+body {
+    position: relative;
+    top: 0;
+}
+
+.container {
+    margin-top: 0px;
+}
+
+.container_for_card {
+    margin-top: 25px;
+}
+
+.card {
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+    color: #333;
+    font-weight: 500;
+}
+
+.feature-info {
+    background-color: #f8f9fa;
+    border-left: 4px solid #2196F3;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.feature-title {
+    font-weight: 500;
+    color: #1976D2;
+    margin-bottom: 5px;
+}
+
+.feature-desc {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+}
+
+.pattern-info {
+    background-color: #e3f2fd;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.85em;
+    color: #1565C0;
+}
+
+.btn-large {
+    border-radius: 5px;
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.btn-large:hover {
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.input-field input:focus + label {
+    color: #2196F3 !important;
+}
+
+.input-field input:focus {
+    border-bottom: 1px solid #2196F3 !important;
+    box-shadow: 0 1px 0 0 #2196F3 !important;
+}
+
+.helper-text {
+    color: #666 !important;
+    font-size: 0.8em;
+}
+
+nav {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.nav-wrapper {
+    background: linear-gradient(45deg, #1976D2, #1565C0) !important;
+}

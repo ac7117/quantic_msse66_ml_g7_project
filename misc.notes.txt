@@ -1,0 +1,166 @@
+from msse66_ml_group7_project import MLProject
+
+# Always get the latest model
+results = MLProject.predict_new_data(new_data, "models/malware_classifier_latest.pkl")
+
+
+cd "d:\My Drive\Learning\Quantic MSSE\Quantic MSSE Projects\msse_ml_g7_project\flask_app";
+
+gcloud projects create mse66-ml-group7 --name="MSE66 ML Group 7 Project"
+
+gcloud config set project mse66-ml-group7
+
+----
+
+cd "d:\My Drive\Learning\Quantic MSSE\Quantic MSSE Projects\msse_ml_g7_project\flask_app";
+
+gcloud run deploy mse66-ml-group7-v1 --source . --set-env-vars="GOOGLE_CLOUD_PROJECT=mse66-ml-group7" --platform managed --region us-central1 --allow-unauthenticated --project=mse66-ml-group7 --memory=1Gi --cpu=1 --timeout=300 --max-instances=10
+
+-------------
+
+
+3️⃣ Random Forest Feature Importance Analysis...
+🔝 Top 15 Most Important Features:
+--------------------------------------------------
+                   6: 0.2663
+                   3: 0.1213
+                   2: 0.1040
+                   8: 0.0537
+                  19: 0.0501
+                   1: 0.0494
+                  20: 0.0426
+                  27: 0.0426
+                  10: 0.0374
+                   9: 0.0366
+                   4: 0.0364
+                  23: 0.0333
+                  15: 0.0333
+                   7: 0.0298
+                  21: 0.0223
+
+📊 Cumulative Feature Importance:
+   90% of importance: 12 features
+   95% of importance: 14 features
+   99% of importance: 18 features
+
+4️⃣ Testing Model Performance with Reduced Features...
+------------------------------------------------------------
+    5 features: 0.9837 accuracy (98.4%)
+   10 features: 0.9920 accuracy (99.2%)
+   15 features: 0.9924 accuracy (99.2%)
+   20 features: 0.9928 accuracy (99.3%)
+   25 features: 0.9932 accuracy (99.3%)
+   30 features: 0.9926 accuracy (99.3%)
+   35 features: 0.9925 accuracy (99.3%)
+
+🎯 RECOMMENDATIONS:
+   Full model accuracy: 0.9925
+   Minimum features for >99% performance: 5
+   Minimum features for >95% performance: 5
+
+✅ RECOMMENDED MINIMAL FEATURE SET (5 features):
+------------------------------------------------------------
+ 1.                    6: 0.2663
+ 2.                    3: 0.1213
+ 3.                    2: 0.1040
+ 4.                    8: 0.0537
+ 5.                   19: 0.0501
+
+5️⃣ Creating Simplified Production Model...
+✅ Simplified model accuracy: 0.9839
+📉 Feature reduction: 35 → 5 (85.7% reduction)
+📊 Accuracy retention: 99.1%
+💾 Saved simplified model: models/malware_classifier_simplified.pkl
+
+6️⃣ Creating Feature Importance Visualization...
+
+🎉 Analysis complete! Check 'models/malware_classifier_simplified.pkl' for production use.
+
+
+
+
+------------------
+
+
+Looking at your msse66_ml_group7_project.py file, I can see exactly how the lightweight version differs from the full-fledged version in the `save_model()` method. Let me analyze the differences:
+
+## 📊 **Lightweight vs Full-Fledged Model Differences**
+
+### 🎯 **Full-Fledged Model Package** (`malware_classifier_latest.pkl`)
+The complete model package includes:
+
+```python
+model_package = {
+    'model': best_model,                    # ✓ The ML model
+    'scaler': self.scaler,                  # ✓ Feature scaler
+    'encoders': self.encoders,              # ✓ Categorical encoders
+    'model_name': best_model_name,          # ✓ Model name
+    'feature_columns': list(self.X_train.columns),  # ✓ Feature names
+    'target_column': 11,                    # ✓ Target column info
+    'class_names': {0: 'Benign', 1: 'Malware'},  # ✓ Class mappings
+    'performance_metrics': self.results[best_model_name],  # ✓ Accuracy, CV scores
+    'training_date': datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  # ✓ Timestamp
+    'data_shape': {                         # ✓ Dataset statistics
+        'training_samples': self.X_train.shape[0],
+        'test_samples': self.X_test.shape[0],
+        'features': self.X_train.shape[1]
+    },
+    'preprocessing_info': {                 # ✓ Preprocessing metadata
+        'missing_values_handled': True,
+        'categorical_encoding_applied': True,
+        'feature_scaling_applied': True,
+        'label_cleaning_applied': True
+    }
+}
+```
+
+### ⚡ **Lightweight Model Package** (`malware_classifier_lightweight.pkl`)
+The stripped-down version includes only:
+
+```python
+lightweight_package = {
+    'model': best_model,                    # ✓ The ML model
+    'scaler': self.scaler,                  # ✓ Feature scaler  
+    'feature_columns': list(self.X_train.columns),  # ✓ Feature names
+    'class_names': {0: 'Benign', 1: 'Malware'}  # ✓ Class mappings
+}
+```
+
+## 🔍 **What's Missing in Lightweight Version?**
+
+The lightweight version **REMOVES**:
+- ❌ `encoders` - Categorical variable encoders
+- ❌ `model_name` - Model type information
+- ❌ `target_column` - Target column metadata
+- ❌ `performance_metrics` - Accuracy, CV scores, predictions
+- ❌ `training_date` - When model was trained
+- ❌ `data_shape` - Training/test sample counts
+- ❌ `preprocessing_info` - Preprocessing steps metadata
+
+## 📈 **Impact on File Size**
+
+Looking at your actual file sizes:
+- **Full version**: `malware_classifier_latest.pkl` = **13.67 MB**
+- **Lightweight**: `malware_classifier_lightweight.pkl` = **13.59 MB**
+
+**Difference**: Only **0.08 MB** (80 KB) smaller - about **0.6% reduction**
+
+## 🤔 **Analysis: Why So Small Difference?**
+
+The lightweight version saves very little space because:
+
+1. **The model itself** (Random Forest with 100+ trees) is the bulk of the file size
+2. **The scaler** (StandardScaler with mean/std for each feature) is also substantial
+3. **Removed metadata** is mostly small text/numbers (performance metrics, dates, etc.)
+4. **Feature columns** list is kept in both versions
+
+## 💡 **Practical Implications**
+
+**For your Cloud Run deployment:**
+- Both versions are functionally equivalent for predictions
+- The lightweight version loads slightly faster (less metadata to deserialize)
+- Space savings are minimal (~80 KB)
+- Your Flask app can use either version without code changes
+
+**Recommendation**: Since the space savings are minimal, you might want to keep the full version for better debugging and monitoring capabilities in production!
+

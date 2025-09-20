@@ -1,0 +1,58 @@
+/* About Page Styles - Malware Detection System */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: 'Roboto', sans-serif;
+    /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
+    background: #fefefe;
+    min-height: 100vh;
+}
+
+body {
+    position: relative;
+    top: 0;
+}
+
+.container {
+    margin-top: 0px;
+}
+
+.container_for_card {
+    margin-top: 25px;
+}
+
+.card {
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.nav-wrapper {
+    background: linear-gradient(45deg, #1976D2, #1565C0) !important;
+}
+
+.feature-card {
+    height: 100%;
+}
+
+.feature-icon {
+    font-size: 3rem !important;
+    color: #2196F3;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: #2196F3;
+}
