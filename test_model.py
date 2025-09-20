@@ -112,11 +112,24 @@ class TestMLModel(unittest.TestCase):
         """Test that simple_detector module can be imported"""
         try:
             import simple_detector
-            self.assertTrue(hasattr(simple_detector, 'predict_malware'), 
-                          "simple_detector should have predict_malware function")
+            
+            # Check that SimpleMalwareDetector class exists
+            self.assertTrue(hasattr(simple_detector, 'SimpleMalwareDetector'), 
+                          "simple_detector should have SimpleMalwareDetector class")
+            
+            # Check that the class has predict_malware method
+            detector_class = getattr(simple_detector, 'SimpleMalwareDetector')
+            self.assertTrue(hasattr(detector_class, 'predict_malware'), 
+                          "SimpleMalwareDetector should have predict_malware method")
+            
             print("✅ simple_detector module imported successfully")
+            print("✅ SimpleMalwareDetector class found")
+            print("✅ predict_malware method found")
+            
         except ImportError as e:
             self.fail(f"Failed to import simple_detector: {str(e)}")
+        except Exception as e:
+            self.fail(f"Simple detector validation failed: {str(e)}")
 
 if __name__ == '__main__':
     print("🧪 Running ML Model Tests...")

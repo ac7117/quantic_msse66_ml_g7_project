@@ -64,7 +64,7 @@ jobs:
     - name: Run ML Model Tests
       run: |
         echo "🧪 Testing ML Model Components..."
-        python -m pytest test_model.py -v --tb=short
+        python test_model.py
     
     - name: Test Simple Detector
       run: |
