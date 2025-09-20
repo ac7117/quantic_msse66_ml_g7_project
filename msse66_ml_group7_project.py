@@ -648,7 +648,15 @@ class MLProject:
         
         print(f"✅ Model loaded successfully!")
         print(f"📊 Model: {model_package.get('model_name', 'Unknown')}")
-        print(f"🎯 Accuracy: {model_package.get('performance_metrics', {}).get('accuracy', 'N/A'):.4f}")
+        
+        # Handle accuracy formatting safely
+        accuracy = model_package.get('performance_metrics', {}).get('accuracy', 'N/A')
+        if accuracy == 'N/A' or accuracy is None:
+            accuracy_str = 'N/A'
+        else:
+            accuracy_str = f"{accuracy:.4f}"
+        print(f"🎯 Accuracy: {accuracy_str}")
+        
         print(f"📅 Training Date: {model_package.get('training_date', 'N/A')}")
         print(f"🔢 Features: {len(model_package.get('feature_columns', []))}")
         
