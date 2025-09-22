@@ -12,7 +12,7 @@ A complete machine learning project for MSSE 66 Group 7, featuring:
 - **Aaron Chan** <aaronchan.net@gmail.com>
 - **Uzo Abakporo** <uzomabak@gmail.com>
 
-## 🚀 Live Demo
+## Live Demo
 **Production URL**: https://mse66-ml-group7-v1-329131540054.us-central1.run.app
 
 ## Project Structure
